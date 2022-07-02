@@ -34,4 +34,15 @@ public class PersonController {
                 .orElse(null);
     }
 
+
+    @DeleteMapping(path = "/{id}")
+    public void deletePersonById(@PathVariable("id") UUID id) {
+        personService.DeletePerson(id);
+    }
+
+    @PutMapping(path = "/{id}")
+    public void updatePerson(@PathVariable("id") UUID id, @RequestBody Person personToUpdate) {
+        personService.UpdatePerson(id,personToUpdate);
+    }
+
 }

@@ -9,9 +9,9 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Repository("fakeDao")
-public class FakePersonDataAccess implements PersonDao {
+public class    FakePersonDataAccess implements PersonDao {
 
-    private static List<Person> DB = new ArrayList<>();
+    private static final List<Person> DB = new ArrayList<>();
 
     @Override
     public int insertPerson(UUID id, Person person) {
@@ -32,12 +32,27 @@ public class FakePersonDataAccess implements PersonDao {
 
     @Override
     public int deletePersonById(UUID id) {
-        return 0;
+        Optional<Person> personMaybe = selectPersonById(id);
+        if (personMaybe.isEmpty()) {
+            return 0;
+        }
+
+        DB.remove(personMaybe.get());
+        return 1;
     }
 
     @Override
-    public int updatePersonById(UUID id, Person person) {
-        return 0;
+    public int updatePersonById(UUID id, Person update) {
+        return selectPersonById(id)
+                .map(person -> {
+                    int indexOfPersonToUpdate = DB.indexOf(person);
+                    if (indexOfPersonToUpdate >= 0) {
+                        DB.set(indexOfPersonToUpdate, new Person(id, update.getName()));
+                        return 1;
+                    }
+                    return 0;
+                })
+                .orElse(0);
     }
 
 }
